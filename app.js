@@ -42,6 +42,33 @@ app.post("/tasks", (req, res) => {
   res.status(201).send(newTask);
 });
 
+app.patch("/tasks/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const task = tasks.find((task) => task.id === id);
+
+  if (task) {
+    Object.keys(req.body).forEach((key) => {
+      task[key] = req.body[key];
+    });
+    task.updatedAt = new Date();
+    res.send(task);
+  } else {
+    res.status(404).send({ message: "Cannot find given id" });
+  }
+});
+
+app.delete("/tasks/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const idx = tasks.findIndex((task) => task.id === id);
+
+  if (idx >= 0) {
+    tasks.splice(idx, 1);
+    res.sendStatus(204);
+  } else {
+    res.status(404).send({ message: "Cannot find given id" });
+  }
+});
+
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
