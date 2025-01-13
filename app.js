@@ -4,6 +4,7 @@ import subscriptions from "./data/mock.js";
 const app = express();
 app.use(express.json());
 
+// GET /subscriptions
 app.get("/subscriptions", (req, res) => {
   const sort = req.query.sort;
 
@@ -14,6 +15,7 @@ app.get("/subscriptions", (req, res) => {
   res.send(newSubscriptions);
 });
 
+// GET /subscriptions/:id
 app.get("/subscriptions/:id", (req, res) => {
   const id = Number(req.params.id);
   const subscription = subscriptions.find((sub) => sub.id === id);
@@ -30,6 +32,7 @@ function getNextId(arr) {
   return Math.max(...ids) + 1;
 }
 
+// POST /subscriptions
 app.post("/subscriptions", (req, res) => {
   const newSubscription = req.body;
 
@@ -41,6 +44,7 @@ app.post("/subscriptions", (req, res) => {
   res.status(201).send(newSubscription);
 });
 
+// PATCH /subscriptions/:id
 app.patch("/subscriptions/:id", (req, res) => {
   const id = Number(req.params.id);
   const subscription = subscriptions.find((sub) => sub.id === id);
@@ -51,6 +55,19 @@ app.patch("/subscriptions/:id", (req, res) => {
     });
     subscription.updatedAt = new Date();
     res.send(subscription);
+  } else {
+    res.status(404).send({ message: "Cannot find given id" });
+  }
+});
+
+// DELETE /subscriptions/:id
+app.delete("/subscriptions/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const idx = subscriptions.findIndex((sub) => sub.id === id);
+
+  if (idx !== -1) {
+    subscriptions.splice(idx, 1);
+    res.sendStatus(204);
   } else {
     res.status(404).send({ message: "Cannot find given id" });
   }
