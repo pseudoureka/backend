@@ -1,5 +1,11 @@
 import express from "express";
 import subscriptions from "./data/mock.js";
+import mongoose from "mongoose";
+import { DATABASE_URL } from "./env.js";
+
+mongoose.connect(DATABASE_URL).then(() => {
+  console.log("Connected to DB");
+});
 
 const app = express();
 app.use(express.json());
