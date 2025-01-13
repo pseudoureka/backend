@@ -4,7 +4,13 @@ import subscriptions from "./data/mock.js";
 const app = express();
 
 app.get("/subscriptions", (req, res) => {
-  res.send(subscriptions);
+  const sort = req.query.sort;
+
+  const compareFn =
+    sort === "price" ? (a, b) => b.price - a.price : (a, b) => b.createdAt - a.createdAt;
+
+  const newSubscriptions = subscriptions.sort(compareFn);
+  res.send(newSubscriptions);
 });
 
 app.listen(3000, () => {
