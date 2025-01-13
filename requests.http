@@ -5,3 +5,21 @@ GET http://localhost:3000/tasks
 
 
 GET http://localhost:3000/tasks?sort=oldest&count=3
+
+
+###
+
+
+GET http://localhost:3000/tasks/10
+
+
+###
+
+
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "title": "코코 산책시키기",
+  "description" : "30분 이상 아파트 주변 걷기"
+}
