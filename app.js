@@ -1,9 +1,10 @@
 import express from "express";
+import subscriptions from "./data/mock.js";
 
 const app = express();
 
-app.get("/hello", (req, res) => {
-  res.send("Bye World!");
+app.get("/subscriptions", (req, res) => {
+  res.send(subscriptions);
 });
 
 app.listen(3000, () => {
