@@ -33,7 +33,7 @@ function asyncHandler(handler) {
 }
 
 app.get(
-  "/tasks",
+  "https://backend-3rkd.onrender.com/tasks",
   asyncHandler(async (req, res) => {
     const sort = req.query.sort;
     const count = Number(req.query.count) || 0;
@@ -47,7 +47,7 @@ app.get(
 );
 
 app.get(
-  "/tasks/:id",
+  "https://backend-3rkd.onrender.com/tasks/:id",
   asyncHandler(async (req, res) => {
     const id = req.params.id;
     const task = await Task.findById(id);
@@ -61,7 +61,7 @@ app.get(
 );
 
 app.post(
-  "/tasks",
+  "https://backend-3rkd.onrender.com/tasks",
   asyncHandler(async (req, res) => {
     const newTask = await Task.create(req.body);
     res.status(201).send(newTask);
@@ -69,7 +69,7 @@ app.post(
 );
 
 app.patch(
-  "/tasks/:id",
+  "https://backend-3rkd.onrender.com/tasks/:id",
   asyncHandler(async (req, res) => {
     const id = req.params.id;
     const task = await Task.findById(id);
@@ -87,7 +87,7 @@ app.patch(
 );
 
 app.delete(
-  "/tasks/:id",
+  "https://backend-3rkd.onrender.com/tasks/:id",
   asyncHandler(async (req, res) => {
     const id = req.params.id;
     const task = await Task.findByIdAndDelete(id);
