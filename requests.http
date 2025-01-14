@@ -10,7 +10,7 @@ GET http://localhost:3000/tasks?sort=oldest&count=3
 ###
 
 
-GET http://localhost:3000/tasks/10
+GET http://localhost:3000/tasks/6785e2c9349864e5bcd5b66e
 
 
 ###
@@ -20,8 +20,8 @@ POST http://localhost:3000/tasks
 Content-Type: application/json
 
 {
-  "title": "코코 산책시키기",
-  "description" : "30분 이상 아파트 주변 걷기"
+  "title": "남해 여행하기",
+  "description" : "추억의 장소 찾아가기"
 }
 
 

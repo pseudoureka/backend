@@ -1,77 +1,98 @@
 import express from "express";
-import tasks from "./data/mock.js";
+import mockTasks from "./data/mock.js";
 import mongoose from "mongoose";
 import { DATABASE_URL } from "./env.js";
+import Task from "./models/Task.js";
 
 mongoose.connect(DATABASE_URL).then(() => console.log("Connected to DB"));
 
 const app = express();
 app.use(express.json());
 
-app.get("/tasks", (req, res) => {
-  const sort = req.query.sort;
-  const count = Number(req.query.count);
+function asyncHandler(handler) {
+  return async function (req, res) {
+    try {
+      await handler(req, res);
+    } catch (e) {
+      if (e.name === "ValidationError") {
+        res.status(400).send({ message: e.message });
+      } else if (e.name === "CastError") {
+        res.status(404).send({ message: "Cannot find given id" });
+      } else {
+        res.status(500).send({ message: e.message });
+      }
+    }
+  };
+}
 
-  const compareFn =
-    sort === "oldest" ? (a, b) => a.createdAt - b.createdAt : (a, b) => b.createdAt - a.createdAt;
+app.get(
+  "/tasks",
+  asyncHandler(async (req, res) => {
+    const sort = req.query.sort;
+    const count = Number(req.query.count) || 0;
 
-  let newTasks = tasks.sort(compareFn);
+    const sortOption = { createdAt: sort === "oldest" ? "asc" : "desc" };
 
-  if (count) {
-    newTasks = tasks.slice(0, count);
-  }
-  res.send(newTasks);
-});
+    const tasks = await Task.find().sort(sortOption).limit(count);
 
-app.get("/tasks/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const task = tasks.find((task) => task.id === id);
+    res.send(tasks);
+  })
+);
 
-  if (task) {
-    res.send(task);
-  } else {
-    res.status(404).send({ message: "Cannot find given id" });
-  }
-});
+app.get(
+  "/tasks/:id",
+  asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const task = await Task.findById(id);
 
-app.post("/tasks", (req, res) => {
-  const newTask = req.body;
-  const ids = tasks.map((task) => task.id);
-  newTask.id = Math.max(...ids) + 1;
-  newTask.isComplete = false;
-  newTask.createdAt = new Date();
-  newTask.updatedAt = new Date();
+    if (task) {
+      res.send(task);
+    } else {
+      res.status(404).send({ message: "Cannot find given id" });
+    }
+  })
+);
 
-  tasks.push(newTask);
-  res.status(201).send(newTask);
-});
+app.post(
+  "/tasks",
+  asyncHandler(async (req, res) => {
+    const newTask = await Task.create(req.body);
+    res.status(201).send(newTask);
+  })
+);
 
-app.patch("/tasks/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const task = tasks.find((task) => task.id === id);
+app.patch(
+  "/tasks/:id",
+  asyncHandler((req, res) => {
+    const id = Number(req.params.id);
+    const task = mockTasks.find((task) => task.id === id);
 
-  if (task) {
-    Object.keys(req.body).forEach((key) => {
-      task[key] = req.body[key];
-    });
-    task.updatedAt = new Date();
-    res.send(task);
-  } else {
-    res.status(404).send({ message: "Cannot find given id" });
-  }
-});
+    if (task) {
+      Object.keys(req.body).forEach((key) => {
+        task[key] = req.body[key];
+      });
+      task.updatedAt = new Date();
+      res.send(task);
+    } else {
+      res.status(404).send({ message: "Cannot find given id" });
+    }
+  })
+);
 
-app.delete("/tasks/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const idx = tasks.findIndex((task) => task.id === id);
+app.delete(
+  "/tasks/:id",
+  asyncHandler((req, res) => {
+    const id = Number(req.params.id);
+    const idx = mockTasks.findIndex((task) => task.id === id);
 
-  if (idx >= 0) {
-    tasks.splice(idx, 1);
-    res.sendStatus(204);
-  } else {
-    res.status(404).send({ message: "Cannot find given id" });
-  }
-});
+    if (idx >= 0) {
+      mockTasks.splice(idx, 1);
+      res.sendStatus(204);
+    } else {
+      res.status(404).send({ message: "Cannot find given id" });
+    }
+  })
+);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

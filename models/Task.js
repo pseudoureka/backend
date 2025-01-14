@@ -4,9 +4,18 @@ const TaskSchema = new mongoose.Schema(
   {
     title: {
       type: String,
+      required: true,
+      maxLength: 30,
+      validate: {
+        validator: (title) => {
+          return title.split(" ").length > 1;
+        },
+        message: "Must contain at least 2 words.",
+      },
     },
     description: {
       type: String,
+      required: true,
     },
     isComplete: {
       type: Boolean,
