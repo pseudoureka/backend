@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Task from "./models/Task.js";
+import cors from "cors";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -8,6 +9,12 @@ mongoose.connect(process.env.DATABASE_URL).then(() => console.log("Connected to 
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+
+// 특정 주소에만 CORS를 허용하고 싶은 경우
+// const corsOptions = {
+//   origin: ["http://localhost:3000", 'https://example.com'],
+// }
 
 function asyncHandler(handler) {
   return async function (req, res) {
