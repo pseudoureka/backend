@@ -1,6 +1,7 @@
 const data = [
   {
     title: "30분 운동",
+    description: "30분",
     isComplete: false,
     createdAt: new Date("2023-03-23T06:34:07.617Z"),
     updatedAt: new Date("2023-03-23T06:34:07.617Z"),
@@ -14,6 +15,7 @@ const data = [
   },
   {
     title: "집 청소",
+    description: "30분",
     isComplete: true,
     createdAt: new Date("2023-03-23T06:34:09.617Z"),
     updatedAt: new Date("2023-03-23T06:34:09.617Z"),
