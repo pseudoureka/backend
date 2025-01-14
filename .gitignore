@@ -1,8 +1,11 @@
 .env*
 env.js
 
+*.http
 
-node_modules
+*.gz
+
+node_modules/
 
 *.log
 
