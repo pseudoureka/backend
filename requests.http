@@ -10,7 +10,7 @@ GET http://localhost:3000/subscriptions?sort=price
 ###
 
 
-GET http://localhost:3000/subscriptions/678730f760d22f247e770ea0
+GET http://localhost:3000/subscriptions/6787
 
 
 ###

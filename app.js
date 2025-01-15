@@ -16,40 +16,54 @@ function asyncHandler(handler) {
     try {
       await handler(req, res);
     } catch (e) {
-      console.log(e.name);
-      console.log(e.message);
+      if (e.name === "ValidationError") {
+        res.status(400).send({ message: e.message });
+      } else if (e.name === "CastError") {
+        res.status(404).send({ message: e.message });
+      } else {
+        res.status(500).send({ message: e.message });
+      }
     }
   };
 }
 
 // GET /subscriptions
-app.get("/subscriptions", async (req, res) => {
-  const sort = req.query.sort;
-  const sortOptions = sort === "price" ? { price: "desc" } : { createdAt: "desc" };
+app.get(
+  "/subscriptions",
+  asyncHandler(async (req, res) => {
+    const sort = req.query.sort;
+    const sortOptions = sort === "price" ? { price: "desc" } : { createdAt: "desc" };
 
-  const subscriptions = await Subscription.find().sort(sortOptions);
+    const subscriptions = await Subscription.find().sort(sortOptions);
 
-  res.send(subscriptions);
-});
+    res.send(subscriptions);
+  })
+);
 
 // GET /subscriptions/:id
-app.get("/subscriptions/:id", async (req, res) => {
-  const id = req.params.id;
-  const subscription = await Subscription.findById(id);
+app.get(
+  "/subscriptions/:id",
+  asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const subscription = await Subscription.findById(id);
 
-  if (subscription) {
-    res.send(subscription);
-  } else {
-    res.status(404).send({ message: "Cannot find given id" });
-  }
-});
+    if (subscription) {
+      res.send(subscription);
+    } else {
+      res.status(404).send({ message: "Cannot find given id" });
+    }
+  })
+);
 
 // POST /subscriptions
-app.post("/subscriptions", async (req, res) => {
-  const newSubscription = await Subscription.create(req.body);
+app.post(
+  "/subscriptions",
+  asyncHandler(async (req, res) => {
+    const newSubscription = await Subscription.create(req.body);
 
-  res.status(201).send(newSubscription);
-});
+    res.status(201).send(newSubscription);
+  })
+);
 
 // PATCH /subscriptions/:id
 app.patch("/subscriptions/:id", (req, res) => {
