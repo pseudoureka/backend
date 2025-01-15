@@ -1,15 +1,18 @@
 import express from "express";
-import mockSubscriptions from "./data/mock.js";
 import mongoose from "mongoose";
-import { DATABASE_URL } from "./env.js";
 import Subscription from "./models/Subscription.js";
+import * as dotenv from "dotenv";
+import cors from "cors";
 
-mongoose.connect(DATABASE_URL).then(() => {
+dotenv.config();
+
+mongoose.connect(process.env.DATABASE_URL).then(() => {
   console.log("Connected to DB");
 });
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 function asyncHandler(handler) {
   return async function (req, res) {
@@ -99,6 +102,6 @@ app.delete(
   })
 );
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log("Server is running on port 3000");
 });
