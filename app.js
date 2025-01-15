@@ -19,7 +19,7 @@ function asyncHandler(handler) {
       if (e.name === "ValidationError") {
         res.status(400).send({ message: e.message });
       } else if (e.name === "CastError") {
-        res.status(404).send({ message: e.message });
+        res.status(404).send({ message: "Cannot find given id" });
       } else {
         res.status(500).send({ message: e.message });
       }
@@ -66,33 +66,38 @@ app.post(
 );
 
 // PATCH /subscriptions/:id
-app.patch("/subscriptions/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const subscription = mockSubscriptions.find((sub) => sub.id === id);
+app.patch(
+  "/subscriptions/:id",
+  asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const subscription = await Subscription.findById(id);
 
-  if (subscription) {
-    Object.keys(req.body).forEach((key) => {
-      subscription[key] = req.body[key];
-    });
-    subscription.updatedAt = new Date();
-    res.send(subscription);
-  } else {
-    res.status(404).send({ message: "Cannot find given id" });
-  }
-});
+    if (subscription) {
+      Object.keys(req.body).forEach((key) => {
+        subscription[key] = req.body[key];
+      });
+      await subscription.save();
+      res.send(subscription);
+    } else {
+      res.status(404).send({ message: "Cannot find given id" });
+    }
+  })
+);
 
 // DELETE /subscriptions/:id
-app.delete("/subscriptions/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const idx = mockSubscriptions.findIndex((sub) => sub.id === id);
+app.delete(
+  "/subscriptions/:id",
+  asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const subscription = await Subscription.findByIdAndDelete(id);
 
-  if (idx !== -1) {
-    mockSubscriptions.splice(idx, 1);
-    res.sendStatus(204);
-  } else {
-    res.status(404).send({ message: "Cannot find given id" });
-  }
-});
+    if (subscription) {
+      res.sendStatus(204);
+    } else {
+      res.status(404).send({ message: "Cannot find given id" });
+    }
+  })
+);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

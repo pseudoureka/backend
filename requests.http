@@ -20,10 +20,10 @@ POST http://localhost:3000/subscriptions
 Content-Type: application/json
 
 {
-  "name": "넷플릭스",
-  "price": 45000,
+  "name": "LG U+",
+  "price": 33000,
   "cycle": "m",
-  "firstPaymentDate": "2023-05-03"
+  "firstPaymentDate": "2023-05-08"
 }
 
 
@@ -31,11 +31,11 @@ Content-Type: application/json
 ###
 
 
-PATCH http://localhost:3000/subscriptions/6
+PATCH http://localhost:3000/subscriptions/678730f760d22f247e770ea0
 Content-Type: application/json
 
 {
-  "price" : 88000
+  "price" : 25000
 }
 
 
