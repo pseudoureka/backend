@@ -1,7 +1,8 @@
 import express from "express";
-import subscriptions from "./data/mock.js";
+import mockSubscriptions from "./data/mock.js";
 import mongoose from "mongoose";
 import { DATABASE_URL } from "./env.js";
+import Subscription from "./models/Subscription.js";
 
 mongoose.connect(DATABASE_URL).then(() => {
   console.log("Connected to DB");
@@ -10,21 +11,30 @@ mongoose.connect(DATABASE_URL).then(() => {
 const app = express();
 app.use(express.json());
 
+function asyncHandler(handler) {
+  return async function (req, res) {
+    try {
+    } catch (e) {
+      console.log(e.name);
+      console.log(e.message);
+    }
+  };
+}
+
 // GET /subscriptions
-app.get("/subscriptions", (req, res) => {
+app.get("/subscriptions", async (req, res) => {
   const sort = req.query.sort;
+  const sortOptions = { createdAt: sort === "oldest" ? "asc" : "desc" };
 
-  const compareFn =
-    sort === "price" ? (a, b) => b.price - a.price : (a, b) => b.createdAt - a.createdAt;
+  const subscriptions = await Subscription.find().sort(sortOptions);
 
-  const newSubscriptions = subscriptions.sort(compareFn);
-  res.send(newSubscriptions);
+  res.send(subscriptions);
 });
 
 // GET /subscriptions/:id
-app.get("/subscriptions/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const subscription = subscriptions.find((sub) => sub.id === id);
+app.get("/subscriptions/:id", async (req, res) => {
+  const id = req.params.id;
+  const subscription = await Subscription.findById(id);
 
   if (subscription) {
     res.send(subscription);
@@ -42,18 +52,18 @@ function getNextId(arr) {
 app.post("/subscriptions", (req, res) => {
   const newSubscription = req.body;
 
-  newSubscription.id = getNextId(subscriptions);
+  newSubscription.id = getNextId(mockSubscriptions);
   newSubscription.createdAt = new Date();
   newSubscription.updatedAt = new Date();
 
-  subscriptions.push(newSubscription);
+  mockSubscriptions.push(newSubscription);
   res.status(201).send(newSubscription);
 });
 
 // PATCH /subscriptions/:id
 app.patch("/subscriptions/:id", (req, res) => {
   const id = Number(req.params.id);
-  const subscription = subscriptions.find((sub) => sub.id === id);
+  const subscription = mockSubscriptions.find((sub) => sub.id === id);
 
   if (subscription) {
     Object.keys(req.body).forEach((key) => {
@@ -69,10 +79,10 @@ app.patch("/subscriptions/:id", (req, res) => {
 // DELETE /subscriptions/:id
 app.delete("/subscriptions/:id", (req, res) => {
   const id = Number(req.params.id);
-  const idx = subscriptions.findIndex((sub) => sub.id === id);
+  const idx = mockSubscriptions.findIndex((sub) => sub.id === id);
 
   if (idx !== -1) {
-    subscriptions.splice(idx, 1);
+    mockSubscriptions.splice(idx, 1);
     res.sendStatus(204);
   } else {
     res.status(404).send({ message: "Cannot find given id" });
