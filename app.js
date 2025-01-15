@@ -32,7 +32,7 @@ function asyncHandler(handler) {
 
 // GET /subscriptions
 app.get(
-  "/subscriptions",
+  "https://backend-subscriptions-api.onrender.com/subscriptions",
   asyncHandler(async (req, res) => {
     const sort = req.query.sort;
     const sortOptions = sort === "price" ? { price: "desc" } : { createdAt: "desc" };
@@ -45,7 +45,7 @@ app.get(
 
 // GET /subscriptions/:id
 app.get(
-  "/subscriptions/:id",
+  "https://backend-subscriptions-api.onrender.com/subscriptions/:id",
   asyncHandler(async (req, res) => {
     const id = req.params.id;
     const subscription = await Subscription.findById(id);
@@ -60,7 +60,7 @@ app.get(
 
 // POST /subscriptions
 app.post(
-  "/subscriptions",
+  "https://backend-subscriptions-api.onrender.com/subscriptions",
   asyncHandler(async (req, res) => {
     const newSubscription = await Subscription.create(req.body);
 
@@ -70,7 +70,7 @@ app.post(
 
 // PATCH /subscriptions/:id
 app.patch(
-  "/subscriptions/:id",
+  "https://backend-subscriptions-api.onrender.com/subscriptions/:id",
   asyncHandler(async (req, res) => {
     const id = req.params.id;
     const subscription = await Subscription.findById(id);
@@ -89,7 +89,7 @@ app.patch(
 
 // DELETE /subscriptions/:id
 app.delete(
-  "/subscriptions/:id",
+  "https://backend-subscriptions-api.onrender.com/subscriptions/:id",
   asyncHandler(async (req, res) => {
     const id = req.params.id;
     const subscription = await Subscription.findByIdAndDelete(id);
