@@ -14,6 +14,7 @@ app.use(express.json());
 function asyncHandler(handler) {
   return async function (req, res) {
     try {
+      await handler(req, res);
     } catch (e) {
       console.log(e.name);
       console.log(e.message);
@@ -24,7 +25,7 @@ function asyncHandler(handler) {
 // GET /subscriptions
 app.get("/subscriptions", async (req, res) => {
   const sort = req.query.sort;
-  const sortOptions = { createdAt: sort === "oldest" ? "asc" : "desc" };
+  const sortOptions = sort === "price" ? { price: "desc" } : { createdAt: "desc" };
 
   const subscriptions = await Subscription.find().sort(sortOptions);
 
@@ -43,20 +44,10 @@ app.get("/subscriptions/:id", async (req, res) => {
   }
 });
 
-function getNextId(arr) {
-  const ids = arr.map((elt) => elt.id);
-  return Math.max(...ids) + 1;
-}
-
 // POST /subscriptions
-app.post("/subscriptions", (req, res) => {
-  const newSubscription = req.body;
+app.post("/subscriptions", async (req, res) => {
+  const newSubscription = await Subscription.create(req.body);
 
-  newSubscription.id = getNextId(mockSubscriptions);
-  newSubscription.createdAt = new Date();
-  newSubscription.updatedAt = new Date();
-
-  mockSubscriptions.push(newSubscription);
   res.status(201).send(newSubscription);
 });
 
